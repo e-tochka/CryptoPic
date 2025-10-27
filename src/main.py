@@ -1,8 +1,7 @@
 import os
 import sys
 
-from crypto_pic import encrypt
-from crypto_pic import decrypt
+from crypto import encrypt, decrypt
 from parser import get_args
 
 def main():

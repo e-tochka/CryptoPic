@@ -46,7 +46,8 @@ def init():
         'results/encrypted',
         'results/decrypted', 
         'results/meta', 
-        'results/metrics'
+        'results/metrics',
+        'results/graphs'
     ]
     for folder in folders:
         full_path = os.path.join(current_dir, folder)
@@ -257,6 +258,14 @@ def create_metrics():
                 print(f"  {algo:8}: энтропия {avg_entropy:.3f}, NPCR {avg_npcr:.2f}%")
 
 """
+Блок генерации графиков (изображений)
+=========================================================================================================
+"""
+
+def create_graphs():
+    pass
+
+"""
 Отделяю блок "запуска" кода
 =========================================================================================================
 """
@@ -264,6 +273,7 @@ def create_metrics():
 def main():
     create_test_images()
     create_metrics()
+    create_graphs()
 
 if __name__ == "__main__":
     main()

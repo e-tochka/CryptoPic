@@ -1,6 +1,5 @@
 # imgs/my_image.png
-results/*/*
-!results/*/.gitkeep
+results
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

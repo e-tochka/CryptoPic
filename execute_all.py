@@ -66,6 +66,7 @@ def decrypt(img, algo):
 def create_test_images():
     for algoritm in algoritms:
         for image in source_images:
+            print(f"\n=====({image} by {algoritm})=====")
             encrypt(image, algoritm)
             decrypt(image, algoritm)
 

@@ -1,10 +1,10 @@
 # imgs/my_image.png
-results/decrypred/*
-results/encrypred/*
-results/meta/*
-results/metrics/*
-results/*
-!results/graphs
+# results/decrypred/*
+# results/encrypred/*
+# results/meta/*
+# results/metrics/*
+results
+# !results/graphs
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

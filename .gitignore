@@ -4,6 +4,7 @@
 # results/meta/*
 # results/metrics/*
 results
+report.md
 # !results/graphs
 
 # Byte-compiled / optimized / DLL files

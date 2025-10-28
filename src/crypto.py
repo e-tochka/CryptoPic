@@ -1,8 +1,8 @@
 import json
 import os
 
-from methods.XOR import xor_encrypt, xor_decrypt
-from methods.AES import aes_encrypt, aes_decrypt
+from methods.XOR_in_stream import xor_encrypt, xor_decrypt
+from methods.AES_in_mods import aes_encrypt, aes_decrypt
 
 def encrypt(args):
     print(f"Шифруем {args.input_file} {args.algo} алгоритмом...")

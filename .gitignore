@@ -6,6 +6,7 @@
 results
 report.md
 # !results/graphs
+.obsidian
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

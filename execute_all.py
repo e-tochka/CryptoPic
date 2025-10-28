@@ -21,12 +21,12 @@ source_images = [
 
 algoritms = [
     'stream', 
-    'aes-ecb', 
+    # 'aes-ecb',
     'aes-cbc', 
     'aes-ctr'
 ]
 
-key = 'qwerty'
+key = 'qwerty1234'
 
 """
 Далее программный код, который отделяю, чтобы симитировать var разделение для изменяемый паарметров
@@ -62,6 +62,7 @@ def create_command(_mode, _in, _out, _algo, _key, _iv, _nonce, _meta):
     return cmd
 
 def encrypt(img, algo):
+    global key
     print(f"Шифруем {img} через {algo} метод...")
     cmd = create_command('encrypt', 'imgs/'+img, 'results/encrypted/'+img+'.'+algo+'.bin', algo, key, None, None, 'results/meta/'+img+'.'+algo+'.json')
     execute_cmd(cmd)
@@ -254,8 +255,7 @@ def create_metrics():
 Блок генерации графиков (изображений)
 =========================================================================================================
 """
-
-def create_graphs():
+def create_graphs(suffix=""):
     """Создание графиков для визуализации результатов"""
     print("\n" + "="*50)
     print("ГЕНЕРАЦИЯ ГРАФИКОВ")
@@ -271,16 +271,18 @@ def create_graphs():
         all_metrics = json.load(f)
     
     # Создаем графики
-    create_entropy_comparison_plot(all_metrics)
-    create_npcr_comparison_plot(all_metrics)
-    create_correlation_comparison_plot(all_metrics)
-    create_uniformity_comparison_plot(all_metrics)
-    create_algorithm_radar_plot(all_metrics)
-    create_image_comparison_heatmap(all_metrics)
+    create_entropy_comparison_plot(all_metrics, suffix)
+    create_correlation_comparison_plot(all_metrics, suffix)
+    create_uniformity_comparison_plot(all_metrics, suffix)
+    create_image_comparison_heatmap(all_metrics, suffix)
+    
+    if suffix == "1":
+        create_npcr_comparison_plot(all_metrics, suffix)
+        create_algorithm_radar_plot(all_metrics, suffix)
     
     print("Все графики сохранены в results/graphs/")
 
-def create_entropy_comparison_plot(all_metrics):
+def create_entropy_comparison_plot(all_metrics, suffix=""):
     """График сравнения энтропии по алгоритмам"""
     plt.figure(figsize=(12, 8))
     
@@ -316,13 +318,16 @@ def create_entropy_comparison_plot(all_metrics):
     plt.xticks(rotation=45)
     plt.tight_layout()
     
+    # Формируем имя файла с суффиксом
+    filename = f'entropy_comparison{suffix}.png'
+    
     # Сохраняем график
-    plt.savefig(os.path.join(current_dir, 'results/graphs/entropy_comparison.png'), 
+    plt.savefig(os.path.join(current_dir, 'results/graphs/', filename), 
                 dpi=300, bbox_inches='tight')
     plt.close()
-    print("✓ График энтропии сохранен")
+    print(f"✓ График энтропии сохранен как {filename}")
 
-def create_npcr_comparison_plot(all_metrics):
+def create_npcr_comparison_plot(all_metrics, suffix=""):
     """График сравнения NPCR по алгоритмам"""
     plt.figure(figsize=(12, 8))
     
@@ -354,12 +359,15 @@ def create_npcr_comparison_plot(all_metrics):
     plt.xticks(rotation=45)
     plt.tight_layout()
     
-    plt.savefig(os.path.join(current_dir, 'results/graphs/npcr_comparison.png'), 
+    # Формируем имя файла с суффиксом
+    filename = f'npcr_comparison{suffix}.png'
+    
+    plt.savefig(os.path.join(current_dir, 'results/graphs/', filename), 
                 dpi=300, bbox_inches='tight')
     plt.close()
-    print("✓ График NPCR сохранен")
+    print(f"✓ График NPCR сохранен как {filename}")
 
-def create_correlation_comparison_plot(all_metrics):
+def create_correlation_comparison_plot(all_metrics, suffix=""):
     """График сравнения корреляции по алгоритмам"""
     plt.figure(figsize=(12, 8))
     
@@ -391,12 +399,15 @@ def create_correlation_comparison_plot(all_metrics):
     plt.xticks(rotation=45)
     plt.tight_layout()
     
-    plt.savefig(os.path.join(current_dir, 'results/graphs/correlation_comparison.png'), 
+    # Формируем имя файла с суффиксом
+    filename = f'correlation_comparison{suffix}.png'
+    
+    plt.savefig(os.path.join(current_dir, 'results/graphs/', filename), 
                 dpi=300, bbox_inches='tight')
     plt.close()
-    print("✓ График корреляции сохранен")
+    print(f"✓ График корреляции сохранен как {filename}")
 
-def create_uniformity_comparison_plot(all_metrics):
+def create_uniformity_comparison_plot(all_metrics, suffix=""):
     """График сравнения равномерности распределения байтов"""
     plt.figure(figsize=(12, 8))
     
@@ -429,26 +440,35 @@ def create_uniformity_comparison_plot(all_metrics):
     plt.xticks(rotation=45)
     plt.tight_layout()
     
-    plt.savefig(os.path.join(current_dir, 'results/graphs/uniformity_comparison.png'), 
+    # Формируем имя файла с суффиксом
+    filename = f'uniformity_comparison{suffix}.png'
+    
+    plt.savefig(os.path.join(current_dir, 'results/graphs/', filename), 
                 dpi=300, bbox_inches='tight')
     plt.close()
-    print("✓ График равномерности сохранен")
+    print(f"✓ График равномерности сохранен как {filename}")
 
-def create_algorithm_radar_plot(all_metrics):
+def create_algorithm_radar_plot(all_metrics, suffix=""):
     """Радарная диаграмма для сравнения алгоритмов"""
     # Вычисляем средние значения для каждого алгоритма
     algo_stats = {}
-    for algo in algoritms:
-        algo_metrics = [m for m in all_metrics if m['algorithm'] == algo]
-        if algo_metrics:
-            algo_stats[algo] = {
-                'entropy': np.mean([m['entropy']['encrypted'] for m in algo_metrics]) / 8.0 * 100,  # нормализуем к 100%
-                'npcr': np.mean([m['npcr_uaci']['npcr'] for m in algo_metrics]),
-                'uniformity': np.mean([m['byte_distribution']['encrypted']['uniformity_score'] for m in algo_metrics]),
-                'correlation_reduction': np.mean([abs(m['correlation']['reduction']) for m in algo_metrics]) * 100
-            }
+    for metric in all_metrics:
+        algo = metric['algorithm']
+        if algo not in algo_stats:
+            algo_stats[algo] = []
+        algo_stats[algo].append(metric)
     
-    if not algo_stats:
+    # Вычисляем средние значения
+    algo_means = {}
+    for algo, metrics in algo_stats.items():
+        algo_means[algo] = {
+            'entropy': np.mean([m['entropy']['encrypted'] for m in metrics]) / 8.0 * 100,
+            'npcr': np.mean([m['npcr_uaci']['npcr'] for m in metrics]),
+            'uniformity': np.mean([m['byte_distribution']['encrypted']['uniformity_score'] for m in metrics]),
+            'correlation_reduction': np.mean([abs(m['correlation']['reduction']) for m in metrics]) * 100
+        }
+    
+    if not algo_means:
         return
     
     # Подготовка данных для радарной диаграммы
@@ -462,7 +482,7 @@ def create_algorithm_radar_plot(all_metrics):
     
     colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4']
     
-    for i, (algo, stats) in enumerate(algo_stats.items()):
+    for i, (algo, stats) in enumerate(algo_means.items()):
         values = [
             stats['entropy'],
             stats['npcr'],
@@ -486,12 +506,15 @@ def create_algorithm_radar_plot(all_metrics):
     plt.legend(loc='upper right', bbox_to_anchor=(1.3, 1.0))
     plt.tight_layout()
     
-    plt.savefig(os.path.join(current_dir, 'results/graphs/algorithm_radar.png'), 
+    # Формируем имя файла с суффиксом
+    filename = f'algorithm_radar{suffix}.png'
+    
+    plt.savefig(os.path.join(current_dir, 'results/graphs/', filename), 
                 dpi=300, bbox_inches='tight')
     plt.close()
-    print("✓ Радарная диаграмма сохранена")
+    print(f"✓ Радарная диаграмма сохранена как {filename}")
 
-def create_image_comparison_heatmap(all_metrics):
+def create_image_comparison_heatmap(all_metrics, suffix=""):
     """Тепловая карта сравнения алгоритмов по изображениям"""
     # Создаем матрицу для тепловой карты (изображения × алгоритмы)
     images = sorted(list(set(m['image'] for m in all_metrics)))
@@ -529,11 +552,13 @@ def create_image_comparison_heatmap(all_metrics):
     plt.colorbar(im, label='NPCR (%)')
     plt.tight_layout()
     
-    plt.savefig(os.path.join(current_dir, 'results/graphs/npcr_heatmap.png'), 
+    # Формируем имя файла с суффиксом
+    filename = f'npcr_heatmap{suffix}.png'
+    
+    plt.savefig(os.path.join(current_dir, 'results/graphs/', filename), 
                 dpi=300, bbox_inches='tight')
     plt.close()
-    print("✓ Тепловая карта NPCR сохранена")
-
+    print(f"✓ Тепловая карта NPCR сохранена как {filename}")
 """
 Генерация отчёта
 =========================================================================================================
@@ -542,12 +567,27 @@ def create_image_comparison_heatmap(all_metrics):
 def create_report():
     retort_text = """# Полученные графики:
 
-![1lab-1](results/graphs/algorithm_radar.png)
-![1lab-2](results/graphs/npcr_heatmap.png)
-![1lab-3](results/graphs/correlation_comparison.png)
-![1lab-4](results/graphs/npcr_comparison.png)
-![1lab-5](results/graphs/entropy_comparison.png)
-![1lab-6](results/graphs/uniformity_comparison.png)"""
+#Основные гарфики
+В основном, стоит обратить внимание лишь на эти 2 графика:
+![1lab-0](results/graphs/algorithm_radar.png)
+![1lab-1](results/graphs/npcr_heatmap.png)
+
+Из этих двух графиков видно, что хуже всего себя показывает aes-ecb. 
+Это происходит в силу того, что он использует для каждого блока один и тот же метод, что не даёт такого разнообразия даннных, как в других реализациях.
+
+Если рассмотреть сравнения без его участия, 
+# Дополнительные сравнения
+
+Так же, при желании, можно ознакомиться со следующими графиками:
+
+![1lab-2](results/graphs/correlation_comparison.png)
+![1lab-3](results/graphs/npcr_comparison.png)
+![1lab-4](results/graphs/entropy_comparison.png)
+![1lab-5](results/graphs/uniformity_comparison.png)
+
+
+Но чтобы всё же увидеть, разницу незначительныую разницу в остальных алгоритмах, предлагаю поэксперементировать и позапускать без aes-ecb
+"""
     report_path = os.path.join(current_dir, 'report.md')
     with open(report_path, 'w', encoding='utf-8') as f:
         f.write(retort_text)
@@ -563,6 +603,7 @@ def main():
     create_metrics()
     create_graphs()
     create_report()
+
 
 if __name__ == "__main__":
     main()

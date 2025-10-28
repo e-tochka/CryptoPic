@@ -5,7 +5,7 @@
 python src/main.py --mode encrypt --in imgs/checkerboard.png --out checkerboard2.png --algo stream --key qwerty
 ```
 
-Для запуска всех возможных вариантов (алгоритм <-> картинка) введите: 
+Для запуска всех возможных вариантов (алгоритм <-> картинка), а так же получения отчёта `/report.md` введите: 
 ```bash
 python execute_all.py
 ```
